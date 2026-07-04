@@ -1,0 +1,248 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Global Reset & Base ─── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: auto; /* Lenis handles smooth scroll */
+  overflow-x: hidden;
+}
+
+body {
+  background-color: #0a0a0a;
+  color: #F5F0E8;
+  font-family: 'Inter', system-ui, sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Typography ─── */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+}
+
+/* ─── Selection ─── */
+::selection {
+  background-color: #C9A84C33;
+  color: #C9A84C;
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+::-webkit-scrollbar-thumb {
+  background: #C9A84C;
+  border-radius: 2px;
+}
+
+/* ─── Lenis smooth scroll ─── */
+html.lenis, html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* ─── Custom Components ─── */
+@layer components {
+  .gold-border {
+    border: 1px solid #C9A84C;
+  }
+  
+  .gold-border-b {
+    border-bottom: 1px solid rgba(201, 168, 76, 0.3);
+  }
+  
+  .section-pad {
+    @apply px-4 md:px-12 lg:px-24;
+  }
+
+  .heading-xl {
+    @apply font-serif text-5xl md:text-7xl lg:text-9xl font-light leading-none tracking-tight;
+  }
+
+  .heading-lg {
+    @apply font-serif text-3xl md:text-5xl lg:text-6xl font-light leading-tight;
+  }
+
+  .heading-md {
+    @apply font-serif text-2xl md:text-4xl font-light leading-tight;
+  }
+
+  .label-text {
+    @apply font-sans text-xs tracking-widest uppercase text-gold;
+  }
+
+  .body-text {
+    @apply font-sans text-sm md:text-base leading-relaxed text-off-white/70;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center gap-3 px-8 py-4 border border-gold text-gold font-sans text-xs tracking-widest uppercase
+           transition-all duration-500 hover:bg-gold hover:text-black cursor-pointer;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center gap-3 px-8 py-4 border border-off-white/30 text-off-white font-sans text-xs tracking-widest uppercase
+           transition-all duration-500 hover:border-gold hover:text-gold cursor-pointer;
+  }
+
+  .product-card {
+    @apply relative bg-dark-card border border-white/5 overflow-hidden transition-all duration-700 cursor-pointer;
+  }
+
+  .product-card:hover {
+    @apply border-gold/40;
+    transform: translateY(-4px);
+  }
+
+  .gold-line {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #C9A84C, transparent);
+  }
+}
+
+/* ─── Marquee ─── */
+.marquee-wrapper {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.marquee-inner {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+/* ─── Horizontal Scroll ─── */
+.horizontal-scroll-container {
+  overflow: hidden;
+}
+
+.horizontal-scroll-track {
+  display: flex;
+  gap: 2rem;
+  width: max-content;
+}
+
+/* ─── 3D Canvas ─── */
+.canvas-container {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* ─── Testimonial Carousel ─── */
+.testimonial-carousel {
+  cursor: grab;
+  overflow: hidden;
+}
+.testimonial-carousel:active {
+  cursor: grabbing;
+}
+
+/* ─── Nav transition ─── */
+.nav-scrolled {
+  background-color: rgba(10, 10, 10, 0.97) !important;
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(201, 168, 76, 0.2);
+}
+
+/* ─── Gold glow ─── */
+.gold-glow {
+  box-shadow: 0 0 20px rgba(201, 168, 76, 0.3), 0 0 60px rgba(201, 168, 76, 0.1);
+}
+
+.gold-text-shadow {
+  text-shadow: 0 0 40px rgba(201, 168, 76, 0.5);
+}
+
+/* ─── Stat counter ─── */
+.stat-number {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(3rem, 6vw, 5rem);
+  color: #C9A84C;
+  line-height: 1;
+  font-weight: 300;
+}
+
+/* ─── Hero letter animation ─── */
+.hero-letter {
+  display: inline-block;
+  overflow: hidden;
+}
+
+.hero-letter span {
+  display: inline-block;
+  transform: translateY(100%);
+}
+
+/* ─── Image overlay ─── */
+.img-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(10,10,10,0.9) 0%, rgba(10,10,10,0.3) 60%, transparent 100%);
+}
+
+/* ─── SVG Line ─── */
+.draw-line {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+}
+
+/* ─── Newsletter input ─── */
+.newsletter-input {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(201, 168, 76, 0.5);
+  outline: none;
+  color: #F5F0E8;
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  padding: 1rem 0;
+  width: 100%;
+  transition: border-color 0.3s ease;
+}
+
+.newsletter-input::placeholder {
+  color: rgba(245, 240, 232, 0.3);
+  letter-spacing: 0.1em;
+  font-size: 0.875rem;
+}
+
+.newsletter-input:focus {
+  border-bottom-color: #C9A84C;
+}
+
+/* ─── Particle canvas ─── */
+.particle-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
