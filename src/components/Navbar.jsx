@@ -301,104 +301,108 @@ export default function Navbar() {
         </AnimatePresence>
       </motion.nav>
 
-      {/* Mobile full-screen menu */}
+      {/* Mobile slide-out drawer menu */}
       <AnimatePresence>
         {menuOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-40 bg-black/98 backdrop-blur-xl flex flex-col items-center justify-start overflow-y-auto pt-28 pb-12"
-          >
-            <div className="flex flex-col items-center gap-7 w-full px-4 md:px-8">
-              {mainLinks.map((link, i) => (
-                <motion.div key={link.label}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.07, duration: 0.4 }}
-                  className="w-full flex flex-col items-center"
-                >
-                  {link.isDropdown ? (
-                    <div className="w-full flex flex-col items-center">
-                      <button
-                        onClick={() => setMobileShopOpen(!mobileShopOpen)}
-                        className="font-serif text-3xl md:text-4xl transition-colors duration-300 text-off-white hover:text-gold flex items-center gap-2 justify-center cursor-pointer"
-                      >
-                        {link.label}
-                        <ChevronDown size={22} className={`transition-transform duration-300 ${mobileShopOpen ? 'rotate-180' : ''} text-gold`} />
-                      </button>
-                      <AnimatePresence>
-                        {mobileShopOpen && (
-                          <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: 'auto', opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            transition={{ duration: 0.3 }}
-                            className="overflow-hidden flex flex-col items-center gap-4 mt-4 w-full"
-                          >
-                            {categories.map((cat, catIdx) => (
-                              <motion.div
-                                key={cat.name}
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: catIdx * 0.05 }}
-                              >
-                                <Link
-                                  to={cat.to}
-                                  onClick={() => setMenuOpen(false)}
-                                  className={`font-sans text-lg tracking-widest uppercase transition-colors duration-300 ${
-                                    location.pathname === cat.to ? 'text-gold' : 'text-off-white/70 hover:text-gold'
-                                  }`}
-                                >
-                                  {cat.name}
-                                </Link>
-                              </motion.div>
-                            ))}
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                  ) : (
-                    <Link
-                      to={link.to}
-                      onClick={() => setMenuOpen(false)}
-                      className={`font-serif text-3xl md:text-4xl transition-colors duration-300 ${location.pathname === link.to ? 'text-gold' : 'text-off-white hover:text-gold'}`}
-                    >
-                      {link.label}
-                    </Link>
-                  )}
-                </motion.div>
-              ))}
+          <>
+            {/* Dark overlay backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.5 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setMenuOpen(false)}
+              className="fixed inset-0 z-[140] bg-black/60 backdrop-blur-sm"
+            />
 
-              <motion.div className="w-16 h-px bg-gold/40 my-2" initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ delay: 0.5, duration: 0.5 }} />
-
-              <motion.div className="flex gap-5 items-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.55 }}>
-                <Link to="/locker" onClick={() => setMenuOpen(false)} className="flex flex-col items-center gap-1 text-off-white/40 hover:text-gold transition-colors duration-300">
-                  <User size={20} />
-                  <span className="font-sans text-[9px] tracking-widest uppercase">Locker</span>
+            {/* Slide-out Drawer Panel */}
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'tween', duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              className="fixed top-0 right-0 bottom-0 w-[85vw] max-w-[360px] z-[150] bg-[#080808]/98 backdrop-blur-xl border-l border-white/5 flex flex-col justify-between shadow-2xl h-screen overflow-hidden text-left"
+            >
+              {/* Drawer Header */}
+              <div className="flex justify-between items-center px-6 py-5 border-b border-white/5 bg-[#0a0a0a]">
+                <Link to="/" onClick={() => setMenuOpen(false)} className="flex items-center gap-1.5">
+                  <span className="font-serif text-lg tracking-[0.15em] text-gold font-light">CREX</span>
+                  <span className="font-serif text-lg tracking-[0.15em] text-off-white font-light">ELITE</span>
                 </Link>
-                <Link to="/search" onClick={() => setMenuOpen(false)} className="flex flex-col items-center gap-1 text-off-white/40 hover:text-gold transition-colors duration-300">
-                  <Search size={20} />
-                  <span className="font-sans text-[9px] tracking-widest uppercase">Search</span>
-                </Link>
-                <Link to="/wishlist" className="flex flex-col items-center gap-1 text-off-white/40 hover:text-gold transition-colors duration-300 relative">
-                  <Heart size={20} />
-                  {wishlistItems.length > 0 && <span className="absolute -top-1 -right-2 w-4 h-4 bg-gold text-black font-sans text-[9px] font-bold flex items-center justify-center rounded-full">{wishlistItems.length}</span>}
-                  <span className="font-sans text-[9px] tracking-widest uppercase">Wishlist</span>
-                </Link>
-                <button onClick={() => { toggleCart(); setMenuOpen(false); }} className="flex flex-col items-center gap-1 text-off-white/40 hover:text-gold transition-colors duration-300 relative">
-                  <ShoppingBag size={20} />
-                  {totalItems > 0 && <span className="absolute -top-1 -right-2 w-4 h-4 bg-gold text-black font-sans text-[9px] font-bold flex items-center justify-center rounded-full">{totalItems}</span>}
-                  <span className="font-sans text-[9px] tracking-widest uppercase">Cart</span>
+                <button onClick={() => setMenuOpen(false)} className="text-off-white/40 hover:text-gold transition-colors duration-300">
+                  <X size={20} />
                 </button>
-              </motion.div>
+              </div>
 
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}>
-                <Link to="/category/bats" className="btn-primary text-xs mt-2">Shop Now</Link>
-              </motion.div>
-            </div>
-          </motion.div>
+              {/* Drawer Content - Scrollable */}
+              <div className="flex-1 overflow-y-auto px-6 py-8 flex flex-col gap-8 scrollbar-none" data-lenis-prevent>
+                {/* Shop Categories Accordion */}
+                <div>
+                  <span className="block font-sans text-[9px] uppercase tracking-widest text-off-white/30 mb-4 font-semibold">Shop Categories</span>
+                  <div className="flex flex-col gap-3">
+                    {categories.map(cat => (
+                      <Link
+                        key={cat.name}
+                        to={cat.to}
+                        onClick={() => setMenuOpen(false)}
+                        className={`flex justify-between items-center py-1 font-sans text-xs tracking-wider uppercase ${
+                          location.pathname === cat.to ? 'text-gold' : 'text-off-white/70 hover:text-gold'
+                        }`}
+                      >
+                        <span>{cat.name}</span>
+                        <span className="text-[10px] text-off-white/20">➔</span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Explore Sections */}
+                <div>
+                  <span className="block font-sans text-[9px] uppercase tracking-widest text-off-white/30 mb-4 font-semibold">Explore</span>
+                  <div className="flex flex-col gap-3">
+                    <Link to="/" onClick={() => setMenuOpen(false)} className={`block py-1 font-sans text-xs tracking-wider uppercase ${location.pathname === '/' ? 'text-gold' : 'text-off-white/70 hover:text-gold'}`}>Home</Link>
+                    <Link to="/teamwear" onClick={() => setMenuOpen(false)} className={`block py-1 font-sans text-xs tracking-wider uppercase ${location.pathname === '/teamwear' ? 'text-gold' : 'text-off-white/70 hover:text-gold'}`}>Teamwear</Link>
+                    <Link to="/bat-fitter" onClick={() => setMenuOpen(false)} className={`block py-1 font-sans text-xs tracking-wider uppercase ${location.pathname === '/bat-fitter' ? 'text-gold' : 'text-off-white/70 hover:text-gold'}`}>Bat Fitter Guide</Link>
+                    <Link to="/blog" onClick={() => setMenuOpen(false)} className={`block py-1 font-sans text-xs tracking-wider uppercase ${location.pathname === '/blog' ? 'text-gold' : 'text-off-white/70 hover:text-gold'}`}>Blog</Link>
+                    <Link to="/about" onClick={() => setMenuOpen(false)} className={`block py-1 font-sans text-xs tracking-wider uppercase ${location.pathname === '/about' ? 'text-gold' : 'text-off-white/70 hover:text-gold'}`}>About Us</Link>
+                  </div>
+                </div>
+
+                {/* User Account Portal shortcut */}
+                <div>
+                  <span className="block font-sans text-[9px] uppercase tracking-widest text-off-white/30 mb-4 font-semibold">Your Account</span>
+                  <div className="flex flex-col gap-3">
+                    <Link to="/locker" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 py-1 font-sans text-xs tracking-wider uppercase text-off-white/70 hover:text-gold">
+                      <User size={13} className="text-gold" />
+                      <span>Member Locker</span>
+                    </Link>
+                    <Link to="/wishlist" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 py-1 font-sans text-xs tracking-wider uppercase text-off-white/70 hover:text-gold">
+                      <Heart size={13} className="text-gold" />
+                      <span>Wishlist ({wishlistItems.length})</span>
+                    </Link>
+                    <Link to="/contact" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 py-1 font-sans text-xs tracking-wider uppercase text-off-white/70 hover:text-gold">
+                      <ShoppingBag size={13} className="text-gold" />
+                      <span>Contact & Support</span>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+
+              {/* Drawer Footer Actions */}
+              <div className="p-6 border-t border-white/5 bg-[#0a0a0a] flex flex-col gap-3">
+                <Link
+                  to="/category/bats"
+                  onClick={() => setMenuOpen(false)}
+                  className="w-full py-3 bg-gold border border-gold text-black text-center font-sans text-xs tracking-widest uppercase font-semibold hover:bg-transparent hover:text-gold transition-all duration-300 cursor-pointer block"
+                >
+                  Shop Collection
+                </Link>
+                <div className="flex justify-between items-center text-[9px] font-sans uppercase tracking-widest text-off-white/20">
+                  <span>© 2026 CREX ELITE</span>
+                  <span>Junagadh, India</span>
+                </div>
+              </div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </>
