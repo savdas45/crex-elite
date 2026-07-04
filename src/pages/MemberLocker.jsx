@@ -295,10 +295,10 @@ export default function MemberLocker() {
           <div className="lg:col-span-8 flex flex-col gap-6">
             
             {/* Header Tabs with Underline */}
-            <div className="flex border-b border-white/5 bg-transparent">
+            <div className="flex border-b border-white/5 bg-transparent overflow-x-auto scrollbar-none">
               <button 
                 onClick={() => setActiveTab('tracker')}
-                className={`py-3 px-5 font-sans text-xs uppercase tracking-widest transition-all duration-300 relative cursor-pointer font-medium ${
+                className={`py-3 px-4 md:px-5 font-sans text-[10px] md:text-xs uppercase tracking-widest transition-all duration-300 relative cursor-pointer font-medium whitespace-nowrap ${
                   activeTab === 'tracker' ? 'text-gold' : 'text-off-white/30 hover:text-off-white'
                 }`}
               >
@@ -309,7 +309,7 @@ export default function MemberLocker() {
               </button>
               <button 
                 onClick={() => setActiveTab('history')}
-                className={`py-3 px-5 font-sans text-xs uppercase tracking-widest transition-all duration-300 relative cursor-pointer font-medium ${
+                className={`py-3 px-4 md:px-5 font-sans text-[10px] md:text-xs uppercase tracking-widest transition-all duration-300 relative cursor-pointer font-medium whitespace-nowrap ${
                   activeTab === 'history' ? 'text-gold' : 'text-off-white/30 hover:text-off-white'
                 }`}
               >
@@ -387,8 +387,25 @@ export default function MemberLocker() {
                         )}
                       </div>
 
-                      {/* Clean Horizontal Stepper */}
-                      <div className="relative py-4 flex justify-between items-center w-full">
+                      {/* Mobile Stepper Progress Bar */}
+                      <div className="block md:hidden border border-white/5 bg-black p-4 w-full">
+                        <div className="flex justify-between items-center text-[9px] font-sans uppercase tracking-widest text-off-white/40 mb-2">
+                          <span>Build Progress</span>
+                          <span className="text-gold">Phase {activePhaseId} of 7</span>
+                        </div>
+                        <div className="w-full h-1 bg-white/5 relative mb-2">
+                          <div 
+                            className="absolute top-0 left-0 h-full bg-gold transition-all duration-750" 
+                            style={{ width: `${Math.min(100, (activePhaseId / 7) * 100)}%` }}
+                          />
+                        </div>
+                        <p className="font-sans text-[10px] text-gold font-medium uppercase tracking-wider">
+                          Active stage: {activeTrackOrder.status === 'Delivered' ? 'Delivered' : activeTrackOrder.status}
+                        </p>
+                      </div>
+
+                      {/* Clean Horizontal Stepper (Desktop/Tablet) */}
+                      <div className="hidden md:flex relative py-4 justify-between items-center w-full">
                         {/* Stepper background line */}
                         <div className="absolute left-[5%] right-[5%] top-1/2 h-[1px] bg-zinc-800 -translate-y-1/2 z-0" />
                         
@@ -417,9 +434,7 @@ export default function MemberLocker() {
                                 {isCompleted ? <Check size={8} /> : phase.id}
                               </div>
                               {/* Small vertical label */}
-                              <span className={`hidden md:block font-sans text-[8px] uppercase tracking-wider mt-2.5 whitespace-nowrap font-medium ${
-                                isActive ? 'text-gold' : isCompleted ? 'text-off-white' : 'text-off-white/20'
-                              }`}>
+                              <span className="font-sans text-[8px] uppercase tracking-wider mt-2.5 whitespace-nowrap font-medium text-off-white/20">
                                 {phase.name.split(' ')[0]}
                               </span>
                             </div>

@@ -81,7 +81,7 @@ export default function Hero() {
 
       {/* 1. The Sovereign Bat (Deep Layer - Moves less) */}
       <motion.div
-        className="floating-item-1 absolute z-10 top-[2%] md:top-[10%] right-[-20%] md:right-[5%] h-[60vh] md:h-[90vh] pointer-events-none opacity-90"
+        className="floating-item-1 absolute z-10 top-[2%] md:top-[10%] right-[-20%] md:right-[5%] h-[60vh] md:h-[90vh] pointer-events-none opacity-40 md:opacity-90"
         animate={{
           x: mousePosition.x * -20,
           y: mousePosition.y * -20,
@@ -98,7 +98,7 @@ export default function Hero() {
 
       {/* 2. Cricket Helmet (Mid Layer - Moves more) */}
       <motion.div
-        className="floating-item-2 absolute z-10 top-[15%] left-[-15%] md:left-[2%] w-[40vw] md:w-[20vw] pointer-events-none opacity-60 md:opacity-80"
+        className="hidden md:block floating-item-2 absolute z-10 top-[15%] md:left-[2%] md:w-[20vw] pointer-events-none opacity-80"
         animate={{
           x: mousePosition.x * 40,
           y: mousePosition.y * 40,
@@ -115,7 +115,7 @@ export default function Hero() {
 
       {/* 3. Batting Gloves (Foreground Layer - Moves most) */}
       <motion.div
-        className="floating-item-3 absolute z-10 bottom-[-5%] left-[0%] md:left-[15%] w-[40vw] md:w-[18vw] pointer-events-none opacity-70 md:opacity-90"
+        className="hidden md:block floating-item-3 absolute z-10 bottom-[-5%] md:left-[15%] md:w-[18vw] pointer-events-none opacity-90"
         animate={{
           x: mousePosition.x * -60,
           y: mousePosition.y * -60,

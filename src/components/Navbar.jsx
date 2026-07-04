@@ -309,9 +309,9 @@ export default function Navbar() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-40 bg-black/98 backdrop-blur-xl flex flex-col items-center justify-center overflow-y-auto pt-20 pb-10"
+            className="fixed inset-0 z-40 bg-black/98 backdrop-blur-xl flex flex-col items-center justify-start overflow-y-auto pt-28 pb-12"
           >
-            <div className="flex flex-col items-center gap-7 w-full px-4 md:px-8 mt-auto mb-auto">
+            <div className="flex flex-col items-center gap-7 w-full px-4 md:px-8">
               {mainLinks.map((link, i) => (
                 <motion.div key={link.label}
                   initial={{ opacity: 0, y: 30 }}
