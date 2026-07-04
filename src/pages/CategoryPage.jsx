@@ -83,6 +83,7 @@ function ProductCard({ product, index }) {
           <img
             src={product.image}
             alt={product.name}
+            loading="lazy"
             className="h-56 object-contain p-4 group-hover:scale-105 transition-transform duration-700"
           />
           <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"

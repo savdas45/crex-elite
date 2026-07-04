@@ -60,6 +60,7 @@ function ProductCard({ product, index }) {
             <img 
               src={product.image} 
               alt={product.name} 
+              loading="lazy"
               className="h-48 object-contain p-4 group-hover:scale-105 transition-transform duration-700" 
             />
             {/* Subtle radial glow */}

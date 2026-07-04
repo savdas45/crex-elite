@@ -131,6 +131,7 @@ export default function SearchPage() {
                       <Link to={`/product/${product.slug}`} className="flex-shrink-0">
                         <div className="h-56 bg-gradient-to-b from-neutral-900/40 to-black flex items-center justify-center overflow-hidden border-b border-white/5">
                           <img src={product.image} alt={product.name}
+                            loading="lazy"
                             className="h-40 object-contain p-3 group-hover:scale-105 transition-transform duration-700" />
                         </div>
                       </Link>
