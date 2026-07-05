@@ -19,10 +19,10 @@ const footerLinks = {
     { label: 'Size Guide', to: '/size-guide' },
   ],
   Support: [
+    { label: 'FAQ & Help Centre', to: '/faq' },
     { label: 'Size Guide', to: '/size-guide' },
     { label: 'Member Locker', to: '/locker' },
     { label: 'Track Order', to: '/locker' },
-    { label: 'Bat Care Guidelines', to: '/about' },
     { label: 'Contact & Support', to: '/contact' },
   ],
 }

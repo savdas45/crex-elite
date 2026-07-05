@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { products, getBySlug } from '../data/products'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowLeft, ShoppingBag, ShieldCheck, Truck, RotateCcw, Check, Star, Heart, Share2, Ruler, Scale } from 'lucide-react'
+import { ArrowLeft, ShoppingBag, ShieldCheck, Truck, RotateCcw, Check, Star, Heart, Share2, Ruler, Scale, Bell } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 import { useWishlist } from '../context/WishlistContext'
 import { useCompare } from '../context/CompareContext'
@@ -43,6 +43,19 @@ export default function ProductDetail() {
   const [activeTab, setActiveTab] = useState('Description')
   const [copied, setCopied] = useState(false)
   const [addKnockingIn, setAddKnockingIn] = useState(false)
+  const [notifyEmail, setNotifyEmail] = useState('')
+  const [notifySubmitted, setNotifySubmitted] = useState(false)
+
+  const handleNotifyMe = (e) => {
+    e.preventDefault()
+    if (!notifyEmail.trim()) return
+    const key = `crex_notify_${product.slug}`
+    const existing = JSON.parse(localStorage.getItem(key) || '[]')
+    if (!existing.includes(notifyEmail)) {
+      localStorage.setItem(key, JSON.stringify([...existing, notifyEmail]))
+    }
+    setNotifySubmitted(true)
+  }
   // Review form state
   const [reviewName, setReviewName] = useState('')
   const [reviewText, setReviewText] = useState('')
@@ -354,9 +367,58 @@ export default function ProductDetail() {
                   </AnimatePresence>
                 </motion.button>
               ) : (
-                <button className="flex-1 border border-white/10 text-off-white/20 h-14 font-sans text-xs tracking-widest uppercase cursor-not-allowed" disabled>
-                  Out of Stock — Notify Me
-                </button>
+                <div className="flex-1 flex flex-col gap-3">
+                  {/* Out of stock badge */}
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex items-center gap-1.5 bg-red-500/10 border border-red-500/20 text-red-400 font-sans text-[10px] uppercase tracking-widest px-3 py-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-red-400 inline-block" />
+                      Out of Stock
+                    </span>
+                    <span className="font-sans text-xs text-off-white/30">Back soon — be the first to know</span>
+                  </div>
+                  {/* Notify Me form */}
+                  <AnimatePresence mode="wait">
+                    {notifySubmitted ? (
+                      <motion.div
+                        key="success"
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="flex items-center gap-2 border border-green-500/20 bg-green-500/5 px-4 py-3"
+                      >
+                        <Check size={14} className="text-green-400 flex-shrink-0" />
+                        <p className="font-sans text-xs text-green-300 leading-snug">
+                          Got it! We'll email <span className="font-semibold">{notifyEmail}</span> the moment this is back in stock.
+                        </p>
+                      </motion.div>
+                    ) : (
+                      <motion.form
+                        key="form"
+                        onSubmit={handleNotifyMe}
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="flex gap-2"
+                      >
+                        <div className="flex-1 relative">
+                          <Bell size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-off-white/30" />
+                          <input
+                            type="email"
+                            required
+                            value={notifyEmail}
+                            onChange={e => setNotifyEmail(e.target.value)}
+                            placeholder="Enter your email"
+                            className="w-full h-11 bg-white/5 border border-white/10 text-off-white font-sans text-xs pl-8 pr-3 placeholder-white/20 focus:outline-none focus:border-gold/40 transition-colors"
+                          />
+                        </div>
+                        <button
+                          type="submit"
+                          className="h-11 px-4 bg-gold text-black font-sans text-[10px] uppercase tracking-widest font-semibold hover:bg-gold/80 transition-colors flex-shrink-0 cursor-pointer"
+                        >
+                          Notify Me
+                        </button>
+                      </motion.form>
+                    )}
+                  </AnimatePresence>
+                </div>
               )}
 
               {/* Wishlist */}

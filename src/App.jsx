@@ -23,6 +23,8 @@ import BatMatchAssistant from './pages/BatMatchAssistant'
 import Compare from './pages/Compare'
 import TeamwearConfigurator from './pages/TeamwearConfigurator'
 import MemberLocker from './pages/MemberLocker'
+import FAQ from './pages/FAQ'
+import SupportChat from './components/SupportChat'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -99,6 +101,7 @@ export default function App() {
         <Route path="/compare" element={<Compare />} />
         <Route path="/teamwear" element={<TeamwearConfigurator />} />
         <Route path="/locker" element={<MemberLocker />} />
+        <Route path="/faq" element={<FAQ />} />
         {/* 404 catch-all */}
         <Route path="*" element={
           <div className="bg-black min-h-screen flex flex-col items-center justify-center text-off-white pt-20 gap-6">
@@ -113,6 +116,7 @@ export default function App() {
         } />
       </Routes>
       <Footer />
+      <SupportChat />
     </div>
   )
 }

@@ -70,7 +70,7 @@ export const products = [
     desc: 'The pinnacle of the CREX ELITE collection. Individually selected for our Master Craftsman workshop, hand-carved, polished with six coats of linseed oil and engraved with a unique serial number.',
     features: ['Master Craftsman selected', 'Six-coat linseed finish', 'Hand-engraved serial number', 'Velvet display case', 'Certificate of origin', 'Lifetime guarantee'],
     specs: { weight: '1,150g', edges: '41mm', profile: 'Collector grade', grip: 'Hand-rolled leather', grains: '9–12', handle: 'Oval cane' },
-    inStock: true, sizes: null,
+    inStock: false, sizes: null,
   },
   {
     id: 19, slug: 'the-junior-pro', category: 'bats',
