@@ -61,12 +61,14 @@ export default function ProductDetail() {
   const [reviewText, setReviewText] = useState('')
   const [reviewRating, setReviewRating] = useState(5)
   const [reviewHover, setReviewHover] = useState(0)
+  const [reviewSort, setReviewSort] = useState('recent')
+  const [votedReviews, setVotedReviews] = useState({})
   const [reviewSubmitted, setReviewSubmitted] = useState(false)
 
   const { addItem } = useCart()
   const { toggle, isWishlisted } = useWishlist()
   const { compareItems, addToCompare, removeFromCompare } = useCompare()
-  const { getReviews, addReview, getAverageRating } = useReviews()
+  const { getReviews, addReview, voteHelpful, getAverageRating } = useReviews()
   const wishlisted = product ? isWishlisted(product.id) : false
   const inCompare = product ? compareItems.some(i => i.id === product.id) : false
   const stockCount = product ? (STOCK_COUNTS[product.slug] ?? 99) : 99
@@ -505,76 +507,134 @@ export default function ProductDetail() {
 
           {activeTab === 'Reviews' && (
             <motion.div key="reviews" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
-              {/* Rating Summary */}
-              <div className="flex flex-col sm:flex-row items-center gap-6 md:gap-8 mb-10 border border-white/5 bg-charcoal/20 p-6 max-w-md">
-                <div className="text-center">
-                  <div className="font-serif text-5xl md:text-6xl text-gold font-light">{avgRating.toFixed(1)}</div>
-                  <StarRating rating={avgRating} />
-                  <p className="font-sans text-[10px] text-off-white/30 mt-1">{reviews.length + product.reviews} reviews</p>
+
+              {/* ── Rating Summary ─────────────────────────────── */}
+              <div className="flex flex-col sm:flex-row gap-6 md:gap-10 mb-10 border border-white/5 bg-white/[0.02] p-6">
+                {/* Big number */}
+                <div className="flex flex-col items-center justify-center gap-2 flex-shrink-0">
+                  <div className="font-serif text-6xl text-gold font-light leading-none">{avgRating.toFixed(1)}</div>
+                  <StarRating rating={avgRating} size={14} />
+                  <p className="font-sans text-[10px] text-off-white/30 uppercase tracking-widest mt-1">{reviews.length + product.reviews} reviews</p>
                 </div>
-                <div className="flex-1 w-full space-y-2">
-                  {[5, 4, 3, 2, 1].map(n => (
-                    <div key={n} className="flex items-center gap-3">
-                      <span className="font-sans text-[10px] text-off-white/40 w-2">{n}</span>
-                      <div className="flex-1 h-1 bg-white/5 overflow-hidden">
-                        <div className="h-full bg-gold transition-all duration-700"
-                          style={{ width: n === Math.round(avgRating) ? '70%' : n === Math.round(avgRating) - 1 ? '20%' : '3%' }} />
+                {/* Breakdown bars — real percentages */}
+                <div className="flex-1 flex flex-col justify-center gap-2 w-full">
+                  {[5, 4, 3, 2, 1].map(n => {
+                    const count = reviews.filter(r => r.rating === n).length
+                    const pct = reviews.length > 0 ? Math.round((count / reviews.length) * 100) : n === Math.round(avgRating) ? 70 : n === Math.round(avgRating) - 1 ? 20 : 3
+                    return (
+                      <div key={n} className="flex items-center gap-3">
+                        <span className="font-sans text-[10px] text-off-white/40 w-2 flex-shrink-0">{n}</span>
+                        <div className="flex-1 h-1.5 bg-white/5 overflow-hidden">
+                          <motion.div
+                            className="h-full bg-gold"
+                            initial={{ width: 0 }}
+                            animate={{ width: `${pct}%` }}
+                            transition={{ duration: 0.8, delay: (5 - n) * 0.06, ease: 'easeOut' }}
+                          />
+                        </div>
+                        <span className="font-sans text-[9px] text-off-white/25 w-7 flex-shrink-0">{pct}%</span>
                       </div>
-                    </div>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* ── Sort Controls ──────────────────────────────── */}
+              <div className="flex items-center justify-between mb-6">
+                <p className="font-sans text-xs text-off-white/40">{reviews.length} customer review{reviews.length !== 1 ? 's' : ''}</p>
+                <div className="flex items-center gap-2">
+                  <span className="font-sans text-[9px] uppercase tracking-widest text-off-white/30">Sort</span>
+                  {[['recent', 'Most Recent'], ['highest', 'Highest Rated'], ['helpful', 'Most Helpful']].map(([val, label]) => (
+                    <button
+                      key={val}
+                      onClick={() => setReviewSort(val)}
+                      className={`font-sans text-[9px] uppercase tracking-wider px-2.5 py-1.5 border transition-all duration-200 cursor-pointer ${
+                        reviewSort === val ? 'border-gold text-gold bg-gold/5' : 'border-white/10 text-off-white/30 hover:border-white/20 hover:text-off-white/50'
+                      }`}
+                    >
+                      {label}
+                    </button>
                   ))}
                 </div>
               </div>
 
-              {/* Review Cards */}
-              <div className="space-y-6 max-w-2xl mb-12">
-                {reviews.map((rev, i) => (
+              {/* ── Review Cards ───────────────────────────────── */}
+              <div className="space-y-4 max-w-2xl mb-12">
+                {[...reviews]
+                  .sort((a, b) => {
+                    if (reviewSort === 'highest') return b.rating - a.rating
+                    if (reviewSort === 'helpful') return (b.helpful || 0) - (a.helpful || 0)
+                    return b.id - a.id
+                  })
+                  .map((rev, i) => (
                   <motion.div
                     key={rev.id || i}
-                    initial={{ opacity: 0, y: 15 }}
+                    initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.06 }}
-                    className="border border-white/5 bg-charcoal/10 p-6"
+                    transition={{ delay: i * 0.05 }}
+                    className="border border-white/5 bg-white/[0.015] p-5 hover:border-white/10 transition-colors duration-300"
                   >
-                    <div className="flex items-start justify-between mb-3">
-                      <div>
-                        <div className="flex items-center gap-3 mb-1">
-                          <div className="w-8 h-8 rounded-full bg-gold/20 border border-gold/30 flex items-center justify-center font-serif text-sm text-gold">
-                            {rev.name.charAt(0)}
-                          </div>
-                          <span className="font-serif text-lg text-off-white">{rev.name}</span>
-                          {rev.verified && <span className="font-sans text-[9px] text-green-400 border border-green-400/30 px-2 py-0.5 tracking-widest uppercase">Verified</span>}
+                    <div className="flex items-start justify-between gap-4 mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 bg-gold/10 border border-gold/20 flex items-center justify-center font-serif text-base text-gold flex-shrink-0">
+                          {rev.name.charAt(0)}
                         </div>
-                        <StarRating rating={rev.rating} size={11} />
+                        <div>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="font-sans text-sm font-medium text-off-white">{rev.name}</span>
+                            {rev.verified && (
+                              <span className="font-sans text-[8px] text-green-400 border border-green-400/30 px-1.5 py-0.5 tracking-widest uppercase">✓ Verified</span>
+                            )}
+                          </div>
+                          <StarRating rating={rev.rating} size={10} />
+                        </div>
                       </div>
-                      <span className="font-sans text-xs text-off-white/30">{rev.date}</span>
+                      <span className="font-sans text-[10px] text-off-white/25 flex-shrink-0">{rev.date}</span>
                     </div>
-                    <p className="font-sans text-sm text-off-white/60 leading-relaxed">{rev.text}</p>
+                    <p className="font-sans text-sm text-off-white/60 leading-relaxed mb-4">{rev.text}</p>
+                    {/* Helpful vote */}
+                    <button
+                      onClick={() => {
+                        if (votedReviews[rev.id]) return
+                        voteHelpful(product.slug, rev.id)
+                        setVotedReviews(prev => ({ ...prev, [rev.id]: true }))
+                      }}
+                      className={`flex items-center gap-1.5 font-sans text-[9px] uppercase tracking-wider transition-colors duration-200 cursor-pointer ${
+                        votedReviews[rev.id] ? 'text-gold' : 'text-off-white/25 hover:text-gold'
+                      }`}
+                    >
+                      <span>{votedReviews[rev.id] ? '👍' : '👍'}</span>
+                      <span>Helpful ({rev.helpful || 0})</span>
+                    </button>
                   </motion.div>
                 ))}
                 {reviews.length === 0 && (
-                  <p className="font-sans text-sm text-off-white/30 italic">No reviews yet. Be the first to write one below!</p>
+                  <p className="font-sans text-sm text-off-white/30 italic py-4">No reviews yet — be the first to share your experience!</p>
                 )}
               </div>
 
-              {/* Write a Review Form */}
-              <div className="max-w-2xl border border-white/10 bg-zinc-900/40 p-8 rounded-xl">
+              {/* ── Write a Review Form ────────────────────────── */}
+              <div className="max-w-2xl border border-white/8 p-8">
+                <p className="font-sans text-[9px] uppercase tracking-widest text-gold mb-2">Share Your Experience</p>
                 <h3 className="font-serif text-2xl font-light text-off-white mb-6">Write a Review</h3>
                 {reviewSubmitted ? (
                   <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="text-center py-8"
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex items-center gap-4 border border-green-500/20 bg-green-500/5 px-5 py-4"
                   >
-                    <div className="text-4xl mb-3">⭐</div>
-                    <p className="font-serif text-xl text-gold mb-1">Thank you for your review!</p>
-                    <p className="font-sans text-sm text-off-white/50">Your review has been published.</p>
+                    <span className="text-2xl">⭐</span>
+                    <div>
+                      <p className="font-sans text-sm font-semibold text-green-400">Thank you — review published!</p>
+                      <p className="font-sans text-xs text-off-white/40">Your review will help other customers choose the right gear.</p>
+                    </div>
                   </motion.div>
                 ) : (
                   <form
                     onSubmit={(e) => {
                       e.preventDefault()
                       if (!reviewName.trim() || !reviewText.trim()) return
-                      addReview(product.slug, { name: reviewName, rating: reviewRating, text: reviewText, verified: false })
+                      addReview(product.slug, { name: reviewName, rating: reviewRating, text: reviewText })
                       setReviewSubmitted(true)
                       setReviewName('')
                       setReviewText('')
@@ -584,7 +644,7 @@ export default function ProductDetail() {
                   >
                     {/* Star Picker */}
                     <div>
-                      <label className="font-sans text-[10px] tracking-widest uppercase text-off-white/50 block mb-3">Your Rating</label>
+                      <label className="font-sans text-[9px] tracking-widest uppercase text-off-white/40 block mb-3">Your Rating</label>
                       <div className="flex items-center gap-2">
                         {[1,2,3,4,5].map(star => (
                           <button
@@ -593,47 +653,44 @@ export default function ProductDetail() {
                             onClick={() => setReviewRating(star)}
                             onMouseEnter={() => setReviewHover(star)}
                             onMouseLeave={() => setReviewHover(0)}
-                            className="transition-transform hover:scale-110"
+                            className="transition-transform hover:scale-110 cursor-pointer"
                           >
                             <Star
-                              size={28}
-                              className={star <= (reviewHover || reviewRating) ? 'fill-gold text-gold' : 'text-white/20'}
+                              size={26}
+                              className={star <= (reviewHover || reviewRating) ? 'fill-gold text-gold' : 'text-white/15'}
                             />
                           </button>
                         ))}
-                        <span className="font-sans text-sm text-off-white/40 ml-2">
+                        <span className="font-sans text-xs text-off-white/40 ml-2">
                           {['','Poor','Fair','Good','Great','Excellent'][reviewHover || reviewRating]}
                         </span>
                       </div>
                     </div>
-
                     {/* Name */}
                     <div>
-                      <label className="font-sans text-[10px] tracking-widest uppercase text-off-white/50 block mb-2">Your Name</label>
+                      <label className="font-sans text-[9px] tracking-widest uppercase text-off-white/40 block mb-2">Your Name</label>
                       <input
                         type="text"
                         value={reviewName}
                         onChange={e => setReviewName(e.target.value)}
-                        placeholder="e.g. James H."
+                        placeholder="e.g. Arjun M."
                         required
-                        className="w-full bg-transparent border border-white/10 px-4 py-3 font-sans text-sm text-off-white placeholder-white/20 focus:outline-none focus:border-gold/50 transition-colors"
+                        className="w-full bg-transparent border border-white/10 px-4 py-3 font-sans text-sm text-off-white placeholder-white/20 focus:outline-none focus:border-gold/40 transition-colors"
                       />
                     </div>
-
                     {/* Review Text */}
                     <div>
-                      <label className="font-sans text-[10px] tracking-widest uppercase text-off-white/50 block mb-2">Your Review</label>
+                      <label className="font-sans text-[9px] tracking-widest uppercase text-off-white/40 block mb-2">Your Review</label>
                       <textarea
                         value={reviewText}
                         onChange={e => setReviewText(e.target.value)}
-                        placeholder="Share your experience with this product…"
+                        placeholder="Share your experience with this product — what do you love about it?"
                         required
                         rows={4}
-                        className="w-full bg-transparent border border-white/10 px-4 py-3 font-sans text-sm text-off-white placeholder-white/20 focus:outline-none focus:border-gold/50 transition-colors resize-none"
+                        className="w-full bg-transparent border border-white/10 px-4 py-3 font-sans text-sm text-off-white placeholder-white/20 focus:outline-none focus:border-gold/40 transition-colors resize-none"
                       />
                     </div>
-
-                    <button type="submit" className="btn-primary px-8 py-4">
+                    <button type="submit" className="btn-primary px-8 py-3 text-xs">
                       Submit Review
                     </button>
                   </form>

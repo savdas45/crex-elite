@@ -8,6 +8,7 @@ import Apparel from '../components/Apparel';
 import MannequinShowcase from '../components/MannequinShowcase';
 import BespokeConfigurator from '../components/BespokeConfigurator';
 import Newsletter from '../components/Newsletter';
+import BestSellers from '../components/BestSellers';
 
 export default function Home() {
   return (
@@ -15,6 +16,7 @@ export default function Home() {
       <Hero />
       <MarqueeStrip />
       <Products />
+      <BestSellers />
       <HorizontalScroll />
       <Stats />
       <Apparel />
