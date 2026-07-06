@@ -509,12 +509,14 @@ export default function ProductDetail() {
             <motion.div key="reviews" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
 
               {/* ── Rating Summary ─────────────────────────────── */}
-              <div className="flex flex-col sm:flex-row gap-6 md:gap-10 mb-10 border border-white/5 bg-white/[0.02] p-6">
+              <div className="flex flex-col sm:flex-row gap-5 sm:gap-8 md:gap-10 mb-8 md:mb-10 border border-white/5 bg-white/[0.02] p-5 sm:p-6">
                 {/* Big number */}
-                <div className="flex flex-col items-center justify-center gap-2 flex-shrink-0">
-                  <div className="font-serif text-6xl text-gold font-light leading-none">{avgRating.toFixed(1)}</div>
-                  <StarRating rating={avgRating} size={14} />
-                  <p className="font-sans text-[10px] text-off-white/30 uppercase tracking-widest mt-1">{reviews.length + product.reviews} reviews</p>
+                <div className="flex sm:flex-col items-center sm:justify-center gap-4 sm:gap-2 flex-shrink-0">
+                  <div className="font-serif text-5xl sm:text-6xl text-gold font-light leading-none">{avgRating.toFixed(1)}</div>
+                  <div>
+                    <StarRating rating={avgRating} size={13} />
+                    <p className="font-sans text-[9px] sm:text-[10px] text-off-white/30 uppercase tracking-widest mt-1 text-center">{reviews.length + product.reviews} reviews</p>
+                  </div>
                 </div>
                 {/* Breakdown bars — real percentages */}
                 <div className="flex-1 flex flex-col justify-center gap-2 w-full">
@@ -540,11 +542,11 @@ export default function ProductDetail() {
               </div>
 
               {/* ── Sort Controls ──────────────────────────────── */}
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
                 <p className="font-sans text-xs text-off-white/40">{reviews.length} customer review{reviews.length !== 1 ? 's' : ''}</p>
-                <div className="flex items-center gap-2">
-                  <span className="font-sans text-[9px] uppercase tracking-widest text-off-white/30">Sort</span>
-                  {[['recent', 'Most Recent'], ['highest', 'Highest Rated'], ['helpful', 'Most Helpful']].map(([val, label]) => (
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="font-sans text-[9px] uppercase tracking-widest text-off-white/30 hidden sm:inline">Sort</span>
+                  {[['recent', 'Recent'], ['highest', 'Top Rated'], ['helpful', 'Helpful']].map(([val, label]) => (
                     <button
                       key={val}
                       onClick={() => setReviewSort(val)}
